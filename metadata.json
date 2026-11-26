@@ -1,0 +1,6 @@
+{
+  "name": "itiswayneee",
+  "description": "Personal dashboard, bio, and connected socials hub for Samwel Wayne (@itiswayneee).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
