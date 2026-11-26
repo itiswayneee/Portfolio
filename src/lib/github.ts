@@ -38,7 +38,7 @@ export interface GitHubCommitActivity {
 }
 
 export interface ContributionDayCell {
-  date: string; // YYYY-MM-DD
+  date: string;
   count: number;
   level: 0 | 1 | 2 | 3 | 4;
 }
@@ -105,9 +105,7 @@ export function extractGitHubUsername(
     if (firstSegment) {
       return firstSegment;
     }
-  } catch {
-    // Fallback to handle parsing below
-  }
+  } catch {}
   return gh.handle.replace(/^@+/, '') || fallback.replace(/^@+/, '');
 }
 
@@ -236,13 +234,11 @@ export function buildContributionSummary(
   for (const commit of commits) {
     if (!commit.date) continue;
     const key = commit.date.slice(0, 10);
-    // Avoid double-counting days already represented heavily by events while ensuring commit dates count
     if (!dailyCounts.has(key)) {
       dailyCounts.set(key, 1);
     }
   }
 
-  // Align grid to end on Saturday of the reference week (or include referenceDate in last column)
   const totalDays = weeksCount * 7;
   const endUtc = new Date(
     Date.UTC(
@@ -251,7 +247,7 @@ export function buildContributionSummary(
       referenceDate.getUTCDate()
     )
   );
-  const endDayOfWeek = endUtc.getUTCDay(); // 0=Sun..6=Sat
+  const endDayOfWeek = endUtc.getUTCDay();
   const daysToSaturday = 6 - endDayOfWeek;
   const gridEnd = new Date(endUtc.getTime() + daysToSaturday * 86400000);
   const gridStart = new Date(gridEnd.getTime() - (totalDays - 1) * 86400000);

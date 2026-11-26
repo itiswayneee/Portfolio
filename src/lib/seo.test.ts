@@ -10,8 +10,8 @@ import {
 
 test('resolveAbsoluteUrl resolves relative avatar paths against baseUrl', () => {
   assert.equal(
-    resolveAbsoluteUrl('/avatar-placeholder.png', 'https://itiswayneee.dev/'),
-    'https://itiswayneee.dev/avatar-placeholder.png'
+    resolveAbsoluteUrl('/avatar.png', 'https://itiswayneee.dev/'),
+    'https://itiswayneee.dev/avatar.png'
   );
   assert.equal(
     resolveAbsoluteUrl('https://cdn.example.com/photo.jpg', 'https://itiswayneee.dev'),
@@ -37,7 +37,7 @@ test('generateProfileMetaTags generates Open Graph and Twitter card metadata fro
   assert.equal(byProp.get('og:title'), 'Samwel Wayne');
   assert.equal(byProp.get('og:description'), profile.shortBio);
   assert.equal(byProp.get('og:url'), 'https://itiswayneee.dev');
-  assert.equal(byProp.get('og:image'), 'https://itiswayneee.dev/avatar-placeholder.png');
+  assert.equal(byProp.get('og:image'), 'https://itiswayneee.dev/avatar.png');
   assert.equal(byProp.get('profile:username'), 'itiswayneee');
   assert.equal(byProp.get('profile:first_name'), 'Samwel');
   assert.equal(byProp.get('profile:last_name'), 'Wayne');
@@ -45,8 +45,8 @@ test('generateProfileMetaTags generates Open Graph and Twitter card metadata fro
   assert.equal(byName.get('twitter:card'), 'summary');
   assert.equal(byName.get('twitter:title'), 'Samwel Wayne');
   assert.equal(byName.get('twitter:description'), profile.shortBio);
-  assert.equal(byName.get('twitter:image'), 'https://itiswayneee.dev/avatar-placeholder.png');
-  assert.equal(byName.get('twitter:creator'), '@itiswayneee');
+  assert.equal(byName.get('twitter:image'), 'https://itiswayneee.dev/avatar.png');
+  assert.equal(byName.has('twitter:creator'), false);
   assert.equal(byName.get('robots'), 'index, follow');
 });
 
@@ -67,5 +67,5 @@ test('generateProfileMetaTagsHtml renders valid Open Graph and Twitter meta tags
   });
   assert.ok(html.includes('<meta property="og:title" content="Samwel Wayne" />'));
   assert.ok(html.includes('<meta name="twitter:card" content="summary" />'));
-  assert.ok(html.includes('<meta name="twitter:creator" content="@itiswayneee" />'));
+  assert.ok(!html.includes('twitter:creator'));
 });

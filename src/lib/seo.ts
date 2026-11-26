@@ -69,7 +69,6 @@ export function generateProfileMetaTags(
     { name: 'author', content: title },
     { name: 'robots', content: 'index, follow' },
 
-    // Open Graph tags
     { property: 'og:type', content: 'profile' },
     { property: 'og:site_name', content: title },
     { property: 'og:title', content: title },
@@ -78,7 +77,6 @@ export function generateProfileMetaTags(
     { property: 'og:image', content: imageUrl },
     { property: 'og:image:alt', content: imageAlt },
 
-    // Twitter / X Card tags
     { name: 'twitter:card', content: cardType },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },

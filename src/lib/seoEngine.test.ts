@@ -8,12 +8,12 @@ import {
   slugifyHandle,
 } from './seoEngine';
 
-test('getSiteData uses full name, placeholder avatar image, and @itiswayneee socials', () => {
+test('getSiteData uses full name, avatar image, and @itiswayneee socials', () => {
   const data = getSiteData();
   assert.equal(data.profile.fullName, 'Samwel Wayne');
   assert.equal(data.profile.alternateName, 'itiswayneee');
-  assert.equal(data.profile.avatarImage, '/avatar-placeholder.png');
-  assert.equal(data.socials.length, 6);
+  assert.equal(data.profile.avatarImage, '/avatar.png');
+  assert.equal(data.socials.length, 4);
 });
 
 test('slugifyHandle normalizes handle slugs', () => {
@@ -32,8 +32,8 @@ test('generatePersonJsonLd includes full name, alternateName, ImageObject, Conta
   assert.deepEqual(jsonLd.image, {
     '@type': 'ImageObject',
     '@id': 'https://itiswayneee.dev/#avatar',
-    url: 'https://itiswayneee.dev/avatar-placeholder.png',
-    contentUrl: 'https://itiswayneee.dev/avatar-placeholder.png',
+    url: 'https://itiswayneee.dev/avatar.png',
+    contentUrl: 'https://itiswayneee.dev/avatar.png',
     width: 800,
     height: 800,
     caption: 'Samwel Wayne (@itiswayneee)',
@@ -44,7 +44,9 @@ test('generatePersonJsonLd includes full name, alternateName, ImageObject, Conta
     email: 'hello@itiswayneee.dpdns.org',
     url: 'https://itiswayneee.dev',
   });
-  assert.equal((jsonLd.sameAs as string[]).length, 6);
+  const sameAs = jsonLd.sameAs as string[];
+  assert.equal(sameAs.length, 4);
+  assert.ok(!sameAs.some((url) => /x\.com|linkedin\.com/.test(url)));
 });
 
 test('generateSchemaGraphJsonLd links WebSite, ProfilePage, and Person in @graph', () => {

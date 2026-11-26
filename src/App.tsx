@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useCallback, useEffect, useState } from 'react';
 import { ArrowDownRight, FolderGit2, Mail } from 'lucide-react';
 import { motion, MotionConfig } from 'motion/react';
