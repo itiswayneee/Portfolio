@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { escapeHtml, getSiteData, slugifyHandle } from '../src/lib/seoEngine';
-import { resolveRequestBaseUrl } from '../src/lib/requestUrl';
+import { escapeHtml, getSiteData, slugifyHandle } from '../src/lib/seoEngine.js';
+import { resolveRequestBaseUrl } from '../src/lib/requestUrl.js';
 
 export default function handler(req: IncomingMessage, res: ServerResponse): void {
   const baseUrl = resolveRequestBaseUrl(req.headers);

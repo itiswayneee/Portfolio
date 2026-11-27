@@ -8,8 +8,8 @@ import {
   getSiteData,
   slugifyHandle,
   UserSiteData,
-} from './src/lib/seoEngine.ts';
-import { getGitHubDashboard } from './src/lib/githubDashboard.ts';
+} from './src/lib/seoEngine.js';
+import { getGitHubDashboard } from './src/lib/githubDashboard.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 

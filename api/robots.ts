@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { resolveRequestBaseUrl } from '../src/lib/requestUrl';
+import { resolveRequestBaseUrl } from '../src/lib/requestUrl.js';
 
 export default function handler(req: IncomingMessage, res: ServerResponse): void {
   const baseUrl = resolveRequestBaseUrl(req.headers);

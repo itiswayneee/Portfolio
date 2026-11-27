@@ -1,4 +1,4 @@
-import { SocialAccount } from '../data/profile';
+import { SocialAccount } from '../data/profile.js';
 
 export interface GitHubUserSummary {
   login: string;

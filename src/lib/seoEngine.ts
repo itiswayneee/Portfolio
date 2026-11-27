@@ -3,8 +3,8 @@ import {
   SiteProfileConfig,
   SOCIAL_ACCOUNTS,
   SocialAccount,
-} from '../data/profile';
-import { generateProfileMetaTagsHtml } from './seo';
+} from '../data/profile.js';
+import { generateProfileMetaTagsHtml } from './seo.js';
 
 export const SITE_URL = 'https://itiswayneee.dpdns.org';
 

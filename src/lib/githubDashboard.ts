@@ -6,8 +6,8 @@ import {
   normalizeGitHubRepos,
   RawGitHubEvent,
   RawGitHubRepoCommit,
-} from './github';
-import { getSiteData } from './seoEngine';
+} from './github.js';
+import { getSiteData } from './seoEngine.js';
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const REFRESH_COOLDOWN_MS = 15 * 1000;

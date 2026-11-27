@@ -1,4 +1,4 @@
-import { SiteProfileConfig, SocialAccount } from '../data/profile';
+import { SiteProfileConfig, SocialAccount } from '../data/profile.js';
 
 export interface MetaTagDescriptor {
   name?: string;
