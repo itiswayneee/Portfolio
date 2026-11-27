@@ -6,6 +6,8 @@ import {
 } from '../data/profile';
 import { generateProfileMetaTagsHtml } from './seo';
 
+export const SITE_URL = 'https://itiswayneee.dpdns.org';
+
 export interface UserSiteData {
   profile: SiteProfileConfig;
   socials: SocialAccount[];
@@ -38,69 +40,46 @@ export function getSiteData(): UserSiteData {
   };
 }
 
+function toDateOnly(isoDate: string): string {
+  return isoDate.split('T')[0] ?? isoDate;
+}
+
 export function generatePersonJsonLd(
   data: UserSiteData,
-  baseUrl = 'https://itiswayneee.dev'
+  baseUrl = SITE_URL
 ): Record<string, unknown> {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const { profile, socials } = data;
   const cleanHandle = profile.alternateName.replace(/^@/, '');
-  const slug = slugifyHandle(profile.slug || cleanHandle) || 'itiswayneee';
 
   const resolvedImage = profile.avatarImage.startsWith('http')
     ? profile.avatarImage
     : `${cleanBase}${profile.avatarImage.startsWith('/') ? '' : '/'}${profile.avatarImage}`;
 
-  const schema: Record<string, unknown> = {
-    '@context': 'https://schema.org',
+  return {
     '@type': 'Person',
     '@id': `${cleanBase}/#person`,
     name: profile.fullName,
     alternateName: cleanHandle,
-    identifier: cleanHandle,
-    url: cleanBase,
-    mainEntityOfPage: `${cleanBase}/u/${slug}`,
+    url: `${cleanBase}/`,
+    description: `${profile.fullName}, known online as ${cleanHandle}. Official personal website and social media profiles.`,
     image: {
       '@type': 'ImageObject',
-      '@id': `${cleanBase}/#avatar`,
       url: resolvedImage,
-      contentUrl: resolvedImage,
       width: 800,
       height: 800,
-      caption: `${profile.fullName} (@${cleanHandle})`,
-    },
-    description: profile.shortBio,
-    email: `mailto:${profile.contactEmail}`,
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'personal',
-      email: profile.contactEmail,
-      url: cleanBase,
     },
     sameAs: socials.map((s) => s.url),
   };
-
-  if (profile.jobTitle?.trim()) {
-    schema.jobTitle = profile.jobTitle.trim();
-  }
-  if (profile.affiliation?.trim()) {
-    schema.affiliation = {
-      '@type': 'Organization',
-      name: profile.affiliation.trim(),
-    };
-  }
-
-  return schema;
 }
 
 export function generateSchemaGraphJsonLd(
   data: UserSiteData,
-  baseUrl = 'https://itiswayneee.dev'
+  baseUrl = SITE_URL
 ): Record<string, unknown> {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const cleanHandle = data.profile.alternateName.replace(/^@/, '');
-  const personWithContext = generatePersonJsonLd(data, cleanBase);
-  const { '@context': _ignoredContext, ...personNode } = personWithContext;
+  const personNode = generatePersonJsonLd(data, cleanBase);
 
   return {
     '@context': 'https://schema.org',
@@ -108,29 +87,23 @@ export function generateSchemaGraphJsonLd(
       {
         '@type': 'WebSite',
         '@id': `${cleanBase}/#website`,
-        url: cleanBase,
+        url: `${cleanBase}/`,
         name: data.profile.fullName,
         alternateName: cleanHandle,
-        description: data.profile.shortBio,
-        publisher: {
-          '@id': `${cleanBase}/#person`,
-        },
+        description: `Official website of ${data.profile.fullName}, also known as ${cleanHandle}.`,
       },
       {
         '@type': 'ProfilePage',
         '@id': `${cleanBase}/#profilepage`,
-        url: cleanBase,
-        name: data.profile.fullName,
-        dateModified: data.updatedAt,
+        url: `${cleanBase}/`,
+        name: `${data.profile.fullName} (@${cleanHandle}) - Official Website`,
         isPartOf: {
           '@id': `${cleanBase}/#website`,
-        },
-        about: {
-          '@id': `${cleanBase}/#person`,
         },
         mainEntity: {
           '@id': `${cleanBase}/#person`,
         },
+        dateModified: toDateOnly(data.updatedAt),
       },
       personNode,
     ],
@@ -139,7 +112,7 @@ export function generateSchemaGraphJsonLd(
 
 export function generateSeoHeadHtml(
   data: UserSiteData,
-  baseUrl = 'https://itiswayneee.dev'
+  baseUrl = SITE_URL
 ): string {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const title = data.profile.fullName;
@@ -147,13 +120,13 @@ export function generateSeoHeadHtml(
   const jsonLdString = JSON.stringify(schema, null, 2).replace(/<\//g, '<\\/');
   const metaTagsHtml = generateProfileMetaTagsHtml(data.profile, {
     baseUrl: cleanBase,
-    canonicalUrl: cleanBase,
+    canonicalUrl: `${cleanBase}/`,
     socials: data.socials,
   });
 
   return [
     `<title>${escapeHtml(title)}</title>`,
-    `<link rel="canonical" href="${escapeHtml(cleanBase)}" />`,
+    `<link rel="canonical" href="${escapeHtml(`${cleanBase}/`)}" />`,
     metaTagsHtml,
     `<script type="application/ld+json">\n${jsonLdString}\n</script>`,
   ].join('\n');

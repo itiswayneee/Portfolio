@@ -10,11 +10,11 @@ import {
 
 test('resolveAbsoluteUrl resolves relative avatar paths against baseUrl', () => {
   assert.equal(
-    resolveAbsoluteUrl('/avatar.png', 'https://itiswayneee.dev/'),
-    'https://itiswayneee.dev/avatar.png'
+    resolveAbsoluteUrl('/samwel-wayne.jpg', 'https://itiswayneee.dpdns.org/'),
+    'https://itiswayneee.dpdns.org/samwel-wayne.jpg'
   );
   assert.equal(
-    resolveAbsoluteUrl('https://cdn.example.com/photo.jpg', 'https://itiswayneee.dev'),
+    resolveAbsoluteUrl('https://cdn.example.com/photo.jpg', 'https://itiswayneee.dpdns.org'),
     'https://cdn.example.com/photo.jpg'
   );
 });
@@ -22,7 +22,7 @@ test('resolveAbsoluteUrl resolves relative avatar paths against baseUrl', () => 
 test('generateProfileMetaTags generates Open Graph and Twitter card metadata from profile data', () => {
   const { profile, socials } = getSiteData();
   const tags = generateProfileMetaTags(profile, {
-    baseUrl: 'https://itiswayneee.dev',
+    baseUrl: 'https://itiswayneee.dpdns.org',
     socials,
   });
 
@@ -36,8 +36,9 @@ test('generateProfileMetaTags generates Open Graph and Twitter card metadata fro
   assert.equal(byProp.get('og:type'), 'profile');
   assert.equal(byProp.get('og:title'), 'Samwel Wayne');
   assert.equal(byProp.get('og:description'), profile.shortBio);
-  assert.equal(byProp.get('og:url'), 'https://itiswayneee.dev');
-  assert.equal(byProp.get('og:image'), 'https://itiswayneee.dev/avatar.png');
+  assert.equal(byProp.get('og:url'), 'https://itiswayneee.dpdns.org');
+  assert.equal(byProp.get('og:image'), 'https://itiswayneee.dpdns.org/samwel-wayne.jpg');
+  assert.equal(byProp.get('og:image:alt'), 'Samwel Wayne');
   assert.equal(byProp.get('profile:username'), 'itiswayneee');
   assert.equal(byProp.get('profile:first_name'), 'Samwel');
   assert.equal(byProp.get('profile:last_name'), 'Wayne');
@@ -45,7 +46,8 @@ test('generateProfileMetaTags generates Open Graph and Twitter card metadata fro
   assert.equal(byName.get('twitter:card'), 'summary');
   assert.equal(byName.get('twitter:title'), 'Samwel Wayne');
   assert.equal(byName.get('twitter:description'), profile.shortBio);
-  assert.equal(byName.get('twitter:image'), 'https://itiswayneee.dev/avatar.png');
+  assert.equal(byName.get('twitter:image'), 'https://itiswayneee.dpdns.org/samwel-wayne.jpg');
+  assert.equal(byName.get('twitter:image:alt'), 'Samwel Wayne');
   assert.equal(byName.has('twitter:creator'), false);
   assert.equal(byName.get('robots'), 'index, follow');
 });
@@ -62,7 +64,7 @@ test('renderMetaTagsHtml escapes special HTML characters cleanly', () => {
 test('generateProfileMetaTagsHtml renders valid Open Graph and Twitter meta tags', () => {
   const { profile, socials } = getSiteData();
   const html = generateProfileMetaTagsHtml(profile, {
-    baseUrl: 'https://itiswayneee.dev',
+    baseUrl: 'https://itiswayneee.dpdns.org',
     socials,
   });
   assert.ok(html.includes('<meta property="og:title" content="Samwel Wayne" />'));

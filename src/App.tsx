@@ -177,7 +177,7 @@ export default function App() {
                     {!imgError ? (
                       <img
                         src={profile.avatarImage}
-                        alt={`${profile.fullName} profile photo`}
+                        alt={profile.fullName}
                         referrerPolicy="no-referrer"
                         onError={() => setImgError(true)}
                         className="h-full w-full object-cover"

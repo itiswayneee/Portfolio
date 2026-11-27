@@ -47,7 +47,7 @@ export function generateProfileMetaTags(
   profile: SiteProfileConfig,
   options: GenerateMetaTagsOptions = {}
 ): MetaTagDescriptor[] {
-  const cleanBase = (options.baseUrl ?? 'https://itiswayneee.dev').replace(/\/+$/, '');
+  const cleanBase = (options.baseUrl ?? 'https://itiswayneee.dpdns.org').replace(/\/+$/, '');
   const canonicalUrl = options.canonicalUrl
     ? resolveAbsoluteUrl(options.canonicalUrl, cleanBase)
     : cleanBase;
@@ -55,7 +55,7 @@ export function generateProfileMetaTags(
   const username = profile.alternateName.trim().replace(/^@+/, '');
   const title = profile.fullName.trim();
   const description = profile.shortBio.trim();
-  const imageAlt = `${title} profile photo`;
+  const imageAlt = title;
   const socials = options.socials ?? [];
   const twitterHandle = extractTwitterHandle(socials);
   const cardType = options.twitterCard ?? 'summary';

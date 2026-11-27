@@ -39,7 +39,7 @@ export const PROFILE_CONFIG: SiteProfileConfig = {
   fullName: 'Samwel Wayne',
   alternateName: 'itiswayneee',
   slug: 'itiswayneee',
-  avatarImage: '/avatar.png',
+  avatarImage: '/samwel-wayne.jpg',
   shortBio:
     'Official personal site for Samwel Wayne (@itiswayneee). Connect across Instagram, TikTok, YouTube, and GitHub.',
   contactEmail: 'hello@itiswayneee.dpdns.org',
@@ -50,7 +50,7 @@ export const SOCIAL_ACCOUNTS: SocialAccount[] = [
     platform: 'instagram',
     label: 'Instagram',
     handle: '@itiswayneee',
-    url: 'https://www.instagram.com/itiswayneee',
+    url: 'https://www.instagram.com/itiswayneee/',
   },
   {
     platform: 'tiktok',
