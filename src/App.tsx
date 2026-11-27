@@ -69,12 +69,18 @@ export default function App() {
 
     try {
       const res = await fetch(`/api/github${forceRefresh ? '?refresh=1' : ''}`);
-      const json = (await res.json()) as {
-        data?: GitHubDashboardPayload;
-        error?: string;
-      };
-      if (!res.ok || !json.data) {
-        throw new Error(json.error || `Request failed (${res.status})`);
+      const text = await res.text();
+      let json: { data?: GitHubDashboardPayload; error?: string } | null = null;
+      try {
+        json = JSON.parse(text) as {
+          data?: GitHubDashboardPayload;
+          error?: string;
+        };
+      } catch {
+        throw new Error(`GitHub service unavailable (${res.status})`);
+      }
+      if (!res.ok || !json?.data) {
+        throw new Error(json?.error || `Request failed (${res.status})`);
       }
       setGithubData(json.data);
     } catch (err) {

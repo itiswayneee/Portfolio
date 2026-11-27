@@ -9,19 +9,9 @@ import {
   slugifyHandle,
   UserSiteData,
 } from './src/lib/seoEngine.ts';
-import {
-  buildContributionSummary,
-  extractGitHubUsername,
-  extractRecentCommits,
-  GitHubDashboardPayload,
-  normalizeGitHubRepos,
-  RawGitHubEvent,
-  RawGitHubRepoCommit,
-} from './src/lib/github.ts';
+import { getGitHubDashboard } from './src/lib/githubDashboard.ts';
 
 const PORT = Number(process.env.PORT) || 3000;
-const GITHUB_CACHE_TTL_MS = 5 * 60 * 1000;
-const GITHUB_REFRESH_COOLDOWN_MS = 15 * 1000;
 
 function resolveBaseUrl(req: express.Request): string {
   const configured = process.env.APP_URL?.trim();
@@ -133,118 +123,18 @@ async function startServer() {
   const app = express();
   const siteData = getSiteData();
 
-  let githubCache: { payload: GitHubDashboardPayload; fetchedMs: number } | null = null;
-
-  async function fetchGitHubJson<T>(url: string): Promise<T> {
-    const headers: Record<string, string> = {
-      Accept: 'application/vnd.github+json',
-      'User-Agent': 'itiswayneee-personal-site',
-    };
-    const token = process.env.GITHUB_TOKEN?.trim();
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-      throw new Error(`GitHub API ${response.status} for ${url}`);
-    }
-    return (await response.json()) as T;
-  }
-
   app.get('/api/profile', (_req, res) => {
     res.json({ data: siteData });
   });
 
   app.get('/api/github', async (req, res) => {
-    const forceRefresh = req.query.refresh === '1';
-    const now = Date.now();
-
-    if (
-      githubCache &&
-      ((!forceRefresh && now - githubCache.fetchedMs < GITHUB_CACHE_TTL_MS) ||
-        (forceRefresh && now - githubCache.fetchedMs < GITHUB_REFRESH_COOLDOWN_MS))
-    ) {
-      res.json({ data: githubCache.payload });
-      return;
-    }
-
-    const username = extractGitHubUsername(
-      siteData.socials,
-      siteData.profile.alternateName
-    );
-
     try {
-      const [rawUser, rawRepos, rawEvents] = await Promise.all([
-        fetchGitHubJson<Record<string, unknown>>(
-          `https://api.github.com/users/${encodeURIComponent(username)}`
-        ),
-        fetchGitHubJson<Array<Record<string, unknown>>>(
-          `https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=pushed&per_page=30`
-        ),
-        fetchGitHubJson<RawGitHubEvent[]>(
-          `https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=60`
-        ),
-      ]);
-
-      const repos = normalizeGitHubRepos(rawRepos);
-
-      const candidateRepoNames = new Set<string>();
-      for (const ev of rawEvents) {
-        if (ev.type === 'PushEvent' && ev.repo?.name) {
-          candidateRepoNames.add(ev.repo.name);
-        }
-        if (candidateRepoNames.size >= 3) break;
-      }
-      for (const repo of repos) {
-        if (repo.fullName) candidateRepoNames.add(repo.fullName);
-        if (candidateRepoNames.size >= 6) break;
-      }
-
-      const targetRepos = Array.from(candidateRepoNames).slice(0, 6);
-      const commitResults = await Promise.allSettled(
-        targetRepos.map(async (fullName) => {
-          const commits = await fetchGitHubJson<RawGitHubRepoCommit[]>(
-            `https://api.github.com/repos/${fullName}/commits?per_page=15`
-          );
-          return { fullName, commits };
-        })
-      );
-
-      const repoCommitsByRepo: Record<string, RawGitHubRepoCommit[]> = {};
-      for (const result of commitResults) {
-        if (result.status === 'fulfilled') {
-          repoCommitsByRepo[result.value.fullName] = result.value.commits;
-        }
-      }
-
-      const commits = extractRecentCommits(rawEvents, repoCommitsByRepo, 40);
-      const summary = buildContributionSummary(rawEvents, commits, new Date(), 36);
-
-      const payload: GitHubDashboardPayload = {
-        username,
-        user: {
-          login: String(rawUser.login ?? username),
-          name: typeof rawUser.name === 'string' ? rawUser.name : null,
-          avatarUrl: String(rawUser.avatar_url ?? ''),
-          htmlUrl: String(rawUser.html_url ?? `https://github.com/${username}`),
-          bio: typeof rawUser.bio === 'string' ? rawUser.bio : null,
-          publicRepos: Number(rawUser.public_repos ?? repos.length),
-          followers: Number(rawUser.followers ?? 0),
-          following: Number(rawUser.following ?? 0),
-        },
-        repos,
-        commits,
-        summary,
-        fetchedAt: new Date().toISOString(),
-      };
-
-      githubCache = { payload, fetchedMs: now };
-      res.json({ data: payload });
+      const data = await getGitHubDashboard({
+        forceRefresh: req.query.refresh === '1',
+        token: process.env.GITHUB_TOKEN?.trim(),
+      });
+      res.json({ data });
     } catch (error) {
-      if (githubCache) {
-        res.json({ data: githubCache.payload });
-        return;
-      }
       const message =
         error instanceof Error ? error.message : 'Unable to fetch GitHub data';
       res.status(502).json({ error: message });
